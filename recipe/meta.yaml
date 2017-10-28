@@ -1,7 +1,7 @@
 {% set org = "mrocklin" %}
 {% set name = "streamz" %}
-{% set version = "0.1.0" %}
-{% set sha256 = "c8621a9552225c5bb8ece69618a35a0fd262087040043f0c9b8ef7ac41e40f17" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "efa58af275d2fe9c5a61976b748c7b5047d7bea49f563745f2a6eae07a18b830" %}
 
 package:
   name: {{ name|lower }}
@@ -25,6 +25,7 @@ requirements:
     - zict
     - tornado
     - toolz
+    - six
 
 test:
   imports:

@@ -27,16 +27,17 @@ requirements:
     - zict
     - six
     - setuptools
-
+    # undocumented, reported by pip check
+    - numpy
+    - pandas
 test:
   imports:
     - streamz
     - streamz.core
-    # Commented out streamz so that tests pass
-    # - streamz.dataframe
+    - streamz.dataframe
   requires:
     - pip
-    - python <3.10
+    - python
   commands:
     - pip check
 

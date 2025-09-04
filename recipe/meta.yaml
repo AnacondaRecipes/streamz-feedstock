@@ -1,6 +1,5 @@
 {% set name = "streamz" %}
 {% set version = "0.6.4" %}
-{% set sha256 = "5577d6904c2ec489c14154095772105e01954648819987d464204c6e3c9634f3" %}
 
 package:
   name: {{ name|lower }}
@@ -9,7 +8,7 @@ package:
 source:
   fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: 5577d6904c2ec489c14154095772105e01954648819987d464204c6e3c9634f3
 
 build:
   number: 0

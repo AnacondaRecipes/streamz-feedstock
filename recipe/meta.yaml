@@ -30,7 +30,20 @@ requirements:
     # undocumented, reported by pip check
     - numpy
     - pandas
+
+{% set skip_tests = "" %}
+# we are using a too new version of 'distributed' (can't use sufficiently old version due to pinning constraints
+# and package availability). skip the affected tests with error: fixture 'loop_in_thread' not found
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_separate_thread_without_time" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_await_syntax" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_partition_then_scatter_sync" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_sync" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_sync_2" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_buffer_sync" %}
+
 test:
+  source_files:
+    - streamz
   imports:
     - streamz
     - streamz.core
@@ -38,9 +51,15 @@ test:
   requires:
     - pip
     - python
+    - pytest
+    - distributed
+    - flaky
+    - dask
+    - numpy
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -vv {{ skip_tests }} streamz/tests
 
 about:
   home: https://github.com/mrocklin/streamz/

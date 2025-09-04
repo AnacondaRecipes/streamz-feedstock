@@ -18,14 +18,15 @@ requirements:
   host:
     - python
     - pip
+    - setuptools
     - wheel
   run:
-    - python >=3.6
-    - zict
+    - python
     - tornado
     - toolz
-    - setuptools
+    - zict
     - six
+    - setuptools
 
 test:
   imports:

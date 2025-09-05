@@ -40,6 +40,11 @@ requirements:
 {% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_sync_2" %}
 {% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_buffer_sync" %}
 
+# timing sensitive test. On some platforms CI is too fast.
+# >       assert L == [(0, 1, 2)]
+# E       assert [(0, 1, 2), (3,)] == [(0, 1, 2)]
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_partition_timeout" %}
+
 test:
   source_files:
     - streamz

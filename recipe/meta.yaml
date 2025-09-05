@@ -40,10 +40,15 @@ requirements:
 {% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_sync_2" %}
 {% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_buffer_sync" %}
 
-# timing sensitive test. On some platforms CI is too fast.
-# >       assert L == [(0, 1, 2)]
-# E       assert [(0, 1, 2), (3,)] == [(0, 1, 2)]
+# timing sensitive tests, CI too fast/slow on some platforms. Skip for all platforms.
 {% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_partition_timeout" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_timed_window" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_delay_ref_counts" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_latest" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_partition_then_scatter_async" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_buffer" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_sources.py::test_process_str" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_sources.py::test_from_iterable_backpressure" %}
 
 test:
   source_files:

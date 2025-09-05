@@ -1,59 +1,97 @@
-{% set org = "mrocklin" %}
 {% set name = "streamz" %}
-{% set version = "0.6.3" %}
-{% set sha256 = "d3067595d2c544020bf51fa02dfc2c15b2fe82f74e44091858d8e70e679a7e6f" %}
+{% set version = "0.6.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: 5577d6904c2ec489c14154095772105e01954648819987d464204c6e3c9634f3
 
 build:
   number: 0
-  skip: True  # [py<36]
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
-  noarch: python
+  skip: True  # [py<39]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
   host:
     - python
     - pip
+    - setuptools
     - wheel
   run:
-    - python >=3.6
-    - zict
+    - python
     - tornado
     - toolz
-    - setuptools
+    - zict
     - six
+    # undocumented, reported by pip check
+    - numpy
+    - pandas
+
+{% set skip_tests = "" %}
+# we are using a too new version of 'distributed' (can't use sufficiently old version due to pinning constraints
+# and package availability). skip the affected tests with error: fixture 'loop_in_thread' not found
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_separate_thread_without_time" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_await_syntax" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_partition_then_scatter_sync" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_sync" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_sync_2" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_buffer_sync" %}
+
+# timing sensitive tests, CI too fast/slow on some platforms. Skip for all platforms.
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_partition_timeout" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_timed_window" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_delay_ref_counts" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_latest" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_backpressure_connect_empty_stream" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_partition_then_scatter_async" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_buffer" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_sources.py::test_process_str" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_sources.py::test_from_iterable_backpressure" %}
+{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_sources.py::test_from_iterable_stop" %}
 
 test:
+  source_files:
+    - streamz
   imports:
     - streamz
     - streamz.core
-    # Commented out streamz so that tests pass
-    # - streamz.dataframe
+    - streamz.dataframe
+    - streamz.batch
+    - streamz.dask
+    - streamz.sinks
+    - streamz.sources
+    - streamz.tests
+    - streamz.utils_test
   requires:
     - pip
-    - python <3.10
+    - python
+    - pytest
+    - distributed
+    - flaky
+    - dask
+    - numpy
   commands:
     - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -vv {{ skip_tests }} streamz/tests
 
 about:
-  home: https://github.com/mrocklin/streamz/
+  home: https://github.com/python-streamz/streamz
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
-  summary: Manage streaming data, optionally with Dask and Pandas
-
+  summary: Real-time stream processing for python
   description: |
-    Manage streaming data, optionally with Dask and Pandas
-  doc_url: https://streamz.readthedocs.io/en/latest/
-  dev_url: https://github.com/mrocklin/streamz/
+    Streamz helps you build pipelines to manage continuous streams of data. 
+    It is simple to use in simple cases, but also supports complex pipelines
+    that involve branching, joining, flow control, feedback, back pressure, and so on.
+    Optionally, Streamz can also work with both Pandas and cuDF dataframes, 
+    to provide sensible streaming operations on continuous tabular data.
+  doc_url: https://streamz.readthedocs.io
+  dev_url: https://github.com/python-streamz/streamz
 
 extra:
   recipe-maintainers:

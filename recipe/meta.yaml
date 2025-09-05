@@ -59,6 +59,12 @@ test:
     - streamz
     - streamz.core
     - streamz.dataframe
+    - streamz.batch
+    - streamz.dask
+    - streamz.sinks
+    - streamz.sources
+    - streamz.tests
+    - streamz.utils_test
   requires:
     - pip
     - python

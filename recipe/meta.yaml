@@ -26,7 +26,6 @@ requirements:
     - toolz
     - zict
     - six
-    - setuptools
     # undocumented, reported by pip check
     - numpy
     - pandas

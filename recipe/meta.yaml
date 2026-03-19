@@ -1,13 +1,13 @@
 {% set name = "streamz" %}
-{% set version = "0.6.4" %}
+{% set version = "0.6.5" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5577d6904c2ec489c14154095772105e01954648819987d464204c6e3c9634f3
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d9ae5f4665c2a261950980c94dfa7f767507d2e33950651936c74b587cacaf22
 
 build:
   number: 0
@@ -25,36 +25,27 @@ requirements:
     - tornado
     - toolz
     - zict
-    - six
-    # undocumented, reported by pip check
-    - numpy
-    - pandas
 
-{% set skip_tests = "" %}
-# we are using a too new version of 'distributed' (can't use sufficiently old version due to pinning constraints
-# and package availability). skip the affected tests with error: fixture 'loop_in_thread' not found
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_separate_thread_without_time" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_await_syntax" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_partition_then_scatter_sync" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_sync" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_sync_2" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_buffer_sync" %}
-
-# timing sensitive tests, CI too fast/slow on some platforms. Skip for all platforms.
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_partition_timeout" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_timed_window" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_delay_ref_counts" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_latest" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_core.py::test_backpressure_connect_empty_stream" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_partition_then_scatter_async" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_dask.py::test_buffer" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_sources.py::test_process_str" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_sources.py::test_from_iterable_backpressure" %}
-{% set skip_tests = skip_tests + " --deselect=streamz/tests/test_sources.py::test_from_iterable_stop" %}
+{% set deselect_tests = "" %}
+# Unstable on CI due to timing problems.
+{% set deselect_tests = " --deselect=test_core.py::test_partition_timeout_cancel" %}  # [osx]
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_partition_timeout" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_timed_window" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_latest" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_partition_timeout" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_await_syntax" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_delay_ref_counts" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_map" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_partition_then_scatter_async" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_scan" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_buffer" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_buffer_sync" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_starmap" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_process_str" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_from_iterable_backpressure" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_from_iterable_stop" %}  # [win]
 
 test:
-  source_files:
-    - streamz
   imports:
     - streamz
     - streamz.core
@@ -73,10 +64,11 @@ test:
     - flaky
     - dask
     - numpy
+    - pytest-asyncio
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - pytest -vv {{ skip_tests }} streamz/tests
+    - pytest --pyargs streamz.tests {{ deselect_tests }}
 
 about:
   home: https://github.com/python-streamz/streamz

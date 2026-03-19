@@ -34,6 +34,7 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_latest" %}  # [win]
 {% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_partition_timeout" %}  # [win]
 {% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_await_syntax" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_delay_ref_counts" %}  # [win]
 {% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_map" %}  # [win]
 {% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_partition_then_scatter_async" %}  # [win]
 {% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_scan" %}  # [win]

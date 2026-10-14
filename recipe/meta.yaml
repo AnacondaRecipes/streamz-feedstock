@@ -1,17 +1,17 @@
 {% set name = "streamz" %}
-{% set version = "0.6.5" %}
+{% set version = "0.6.6" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d9ae5f4665c2a261950980c94dfa7f767507d2e33950651936c74b587cacaf22
+  sha256: b72e55177bcd3c46608a0bcfb630bff43485ac6f1c0550586d2b5ead23901f10
 
 build:
   number: 0
-  skip: True  # [py<39]
+  skip: true  # [py<310]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:

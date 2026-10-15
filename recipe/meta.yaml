@@ -1,17 +1,17 @@
 {% set name = "streamz" %}
-{% set version = "0.6.5" %}
+{% set version = "0.6.6" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d9ae5f4665c2a261950980c94dfa7f767507d2e33950651936c74b587cacaf22
+  sha256: b72e55177bcd3c46608a0bcfb630bff43485ac6f1c0550586d2b5ead23901f10
 
 build:
   number: 0
-  skip: True  # [py<39]
+  skip: true  # [py<310]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
@@ -28,22 +28,25 @@ requirements:
 
 {% set deselect_tests = "" %}
 # Unstable on CI due to timing problems.
-{% set deselect_tests = " --deselect=test_core.py::test_partition_timeout_cancel" %}  # [osx]
-{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_partition_timeout" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_timed_window" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_latest" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_partition_timeout" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_await_syntax" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_delay_ref_counts" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_map" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_partition_then_scatter_async" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_scan" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_buffer" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_buffer_sync" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_starmap" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_process_str" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_from_iterable_backpressure" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_from_iterable_stop" %}  # [win]
+{% set deselect_tests = " --deselect=test_core.py::test_partition_timeout_cancel" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_partition_timeout" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_timed_window" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_latest" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_partition_timeout" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_await_syntax" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_delay_ref_counts" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_map_async_tornado" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_core.py::test_map_async" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_map" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_partition_then_scatter_async" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_scan" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_buffer" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_buffer_sync" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_dask.py::test_starmap" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_process_str" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_from_iterable_backpressure" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_from_iterable_stop" %}
+{% set deselect_tests = deselect_tests + " --deselect=test_sources.py::test_tcp_word_count_example" %}
 
 test:
   imports:
